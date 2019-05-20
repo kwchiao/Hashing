@@ -4,9 +4,9 @@ class Node {
     int key;
     Node next;
 
-    Node(int v, int k, Node n){
-        val = v;
+    Node(int k, int v, Node n){ 
         key = k;
+        val = v;
         next = n;
     }
 }
