@@ -1,32 +1,16 @@
-
 class HashChaining {
 
     //array of nodes
     Node[] hash;
     int capacity;
     int size;
-    int collisions;
+    int collision;
 
     HashChaining(){
         capacity = HashFunction.hash_size;
         hash = new Node[capacity];
         size = 0;
-        collisions = 0;        
-    }
-
-    void print(){
-        for (int i = 0; i < capacity; i++) {
-            System.out.print(i + ": ");
-            Node n = hash[i];
-            if (n != null){
-                n = n.next;
-            }
-            while ( n != null){
-                System.out.print(n.key + " ");
-                n = n.next;
-            }
-            System.out.println();
-        }
+        collision = 0;        
     }
 
     int search(int key){
@@ -68,6 +52,9 @@ class HashChaining {
             hash[index] = new Node(0, 0, null);
             prev = hash[index];
         }
+        else {
+            collision++;
+        }
 
         if (prev.next == null) {
             prev.next = new Node(key, value, null);
@@ -86,8 +73,22 @@ class HashChaining {
         if (prev != null && prev.next != null){
             prev.next = prev.next.next;
             size--;
+            collision--;
         }
     }
 
-
+    void print(){
+        for (int i = 0; i < capacity; i++) {
+            System.out.print(i + ": ");
+            Node n = hash[i];
+            if (n != null){
+                n = n.next;
+            }
+            while ( n != null){
+                System.out.print(n.key + " ");
+                n = n.next;
+            }
+            System.out.println();
+        }
+    }
 }
