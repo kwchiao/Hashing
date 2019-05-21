@@ -8,14 +8,14 @@ class LinearProbing {
     int collision;
 
     LinearProbing(){
-        capacity = HashFunction.hash_size;
+        capacity = Helper.hash_size;
         hash = new Pair[capacity];
         size = 0;
         collision = 0;        
     }
 
     int search(int key){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
         index = linear_probing(index, key);
         if (index == -1 || hash[index] == null){
            return -1;
@@ -24,7 +24,7 @@ class LinearProbing {
     }
 
     void add(int key, int value){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
 
         
         if (index == -1){
@@ -48,17 +48,17 @@ class LinearProbing {
     }
 
     void delete(int key){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
         index = linear_probing(index, key);
         if (index == -1 || hash[index] == null){
             System.out.println("exception");
         }
         
-        int j = HashFunction.next_index(index);
+        int j = Helper.next_index(index);
         int count = 1;
         while (count < capacity && hash[j] != null){
-            int hash_key = HashFunction.hash_mod(hash[j].key);
-            int iplusone = HashFunction.next_index(index);
+            int hash_key = Helper.hash_mod(hash[j].key);
+            int iplusone = Helper.next_index(index);
             boolean inrange = false;
 
             // check range
@@ -76,7 +76,7 @@ class LinearProbing {
                 index = j;
             }
 
-            j = HashFunction.next_index(j);
+            j = Helper.next_index(j);
             count++;
         }
         hash[index] = null;
@@ -86,7 +86,7 @@ class LinearProbing {
     int linear_probing(int index, int key){
         int count = 1;
         while (count < capacity && hash[index] != null && hash[index].key != key){
-            index = HashFunction.next_index(index);
+            index = Helper.next_index(index);
             count++;
         }
 

@@ -7,14 +7,14 @@ class HashChaining {
     int collision;
 
     HashChaining(){
-        capacity = HashFunction.hash_size;
+        capacity = Helper.hash_size;
         hash = new Node[capacity];
         size = 0;
         collision = 0;        
     }
 
     int search(int key){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
         Node node = chaining(hash[index], key).next;
 
         if (node == null){
@@ -44,7 +44,7 @@ class HashChaining {
     }
 
     void add(int key, int value){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
         Node prev = chaining(hash[index], key);
 
         // hash[index] is null
@@ -68,7 +68,7 @@ class HashChaining {
     }
 
     void delete(int key){
-        int index = HashFunction.hash_mod(key);
+        int index = Helper.hash_mod(key);
         Node prev = chaining(hash[index], key);
         if (prev != null && prev.next != null){
             prev.next = prev.next.next;

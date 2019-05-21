@@ -19,15 +19,23 @@ class Pair {
         val = v;
     }
 
+    Pair(){
+    }
+
     void set(int k, int v){
         key = k;
         val = v;
     }
+
+    void copy(Pair p){
+        this.key = p.key;
+        this.val = p.val;
+    }
 }
 
-class HashFunction {
+class Helper {
 
-    public static final int hash_size = 13;
+    public static final int hash_size = 11;
 
     public static int hash_mod(int k){
         return k % hash_size;
@@ -39,6 +47,16 @@ class HashFunction {
 
     public static int next_index(int i){
         return (i + 1) % hash_size;
+    }
+
+
+    public static int hash(int flag, int k){
+        if (flag == 0){
+            return hash_mod(k);
+        }
+        else {
+            return hash_div_mod(k);
+        }
     }
 }
 
