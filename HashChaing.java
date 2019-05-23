@@ -6,15 +6,15 @@ class HashChaining {
     int size;
     int collision;
 
-    HashChaining(){
-        capacity = Helper.hash_size;
+    HashChaining(int cap){
+        capacity = cap;
         hash = new Node[capacity];
         size = 0;
         collision = 0;        
     }
 
     int search(int key){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
         Node node = chaining(hash[index], key).next;
 
         if (node == null){
@@ -44,7 +44,7 @@ class HashChaining {
     }
 
     void add(int key, int value){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
         Node prev = chaining(hash[index], key);
 
         // hash[index] is null
@@ -68,7 +68,7 @@ class HashChaining {
     }
 
     void delete(int key){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
         Node prev = chaining(hash[index], key);
         if (prev != null && prev.next != null){
             prev.next = prev.next.next;

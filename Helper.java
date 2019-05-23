@@ -35,27 +35,28 @@ class Pair {
 
 class Helper {
 
-    public static final int hash_size = 11;
-
-    public static int hash_mod(int k){
+    public static int hash_mod(int k, int hash_size){
         return k % hash_size;
     }
 
-    public static int hash_div_mod(int k){
+    public static int hash_div_mod(int k, int hash_size){
         return (k/hash_size) % hash_size;
     }
 
-    public static int next_index(int i){
+    public static int next_index(int i, int hash_size){
         return (i + 1) % hash_size;
     }
 
+    public static int quad_next_index(int i, int count, int hash_size){
+        return (i + count * count) % hash_size;
+    }
 
-    public static int hash(int flag, int k){
+    public static int hash(int flag, int k, int hash_size){
         if (flag == 0){
-            return hash_mod(k);
+            return hash_mod(k, hash_size);
         }
         else {
-            return hash_div_mod(k);
+            return hash_div_mod(k, hash_size);
         }
     }
 }

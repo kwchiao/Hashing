@@ -7,15 +7,15 @@ class LinearProbing {
     int size;
     int collision;
 
-    LinearProbing(){
-        capacity = Helper.hash_size;
+    LinearProbing(int cap){
+        capacity = cap;
         hash = new Pair[capacity];
         size = 0;
         collision = 0;        
     }
 
     int search(int key){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
         index = linear_probing(index, key);
         if (index == -1 || hash[index] == null){
            return -1;
@@ -24,9 +24,8 @@ class LinearProbing {
     }
 
     void add(int key, int value){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
 
-        
         if (index == -1){
             hash[index] = new Pair(key, value);
         }
@@ -48,17 +47,17 @@ class LinearProbing {
     }
 
     void delete(int key){
-        int index = Helper.hash_mod(key);
+        int index = Helper.hash_mod(key, capacity);
         index = linear_probing(index, key);
         if (index == -1 || hash[index] == null){
             System.out.println("exception");
         }
         
-        int j = Helper.next_index(index);
+        int j = Helper.next_index(index, capacity);
         int count = 1;
         while (count < capacity && hash[j] != null){
-            int hash_key = Helper.hash_mod(hash[j].key);
-            int iplusone = Helper.next_index(index);
+            int hash_key = Helper.hash_mod(hash[j].key, capacity);
+            int iplusone = Helper.next_index(index, capacity);
             boolean inrange = false;
 
             // check range
@@ -76,7 +75,7 @@ class LinearProbing {
                 index = j;
             }
 
-            j = Helper.next_index(j);
+            j = Helper.next_index(j, capacity);
             count++;
         }
         hash[index] = null;
@@ -86,7 +85,7 @@ class LinearProbing {
     int linear_probing(int index, int key){
         int count = 1;
         while (count < capacity && hash[index] != null && hash[index].key != key){
-            index = Helper.next_index(index);
+            index = Helper.next_index(index, capacity);
             count++;
         }
 

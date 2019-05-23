@@ -5,8 +5,8 @@ class CuckooHashing {
     int size;
     int collision;
 
-    CuckooHashing(){
-        capacity = Helper.hash_size;
+    CuckooHashing(int cap){
+        capacity = cap;
         hash = new Pair[2][capacity];
         hash[0] = new Pair[capacity];
         hash[1] = new Pair[capacity];
@@ -16,8 +16,8 @@ class CuckooHashing {
 
     int search(int key){
         if (size == 0) return -1;
-        int index1 = Helper.hash_mod(key);
-        int index2 = Helper.hash_div_mod(key);
+        int index1 = Helper.hash_mod(key, capacity);
+        int index2 = Helper.hash_div_mod(key, capacity);
         if (hash[0][index1] != null){
             return hash[0][index1].val;
         }
@@ -49,7 +49,7 @@ class CuckooHashing {
 
     //swap pair with hash_f[mod(pair.key)]
     int addHelper(int flag, int key, Pair temp, Pair pair){
-        int index = Helper.hash(flag, key);
+        int index = Helper.hash(flag, key, capacity);
         if (hash[flag][index] == null){
             pair = null;
         }
@@ -67,8 +67,8 @@ class CuckooHashing {
 
     void delete(int key){
         if (size == 0) return;
-        int index1 = Helper.hash_mod(key);
-        int index2 = Helper.hash_div_mod(key);
+        int index1 = Helper.hash_mod(key, capacity);
+        int index2 = Helper.hash_div_mod(key, capacity);
 
         if (hash[0][index1] != null && hash[0][index1].key == key ){
             hash[0][index1] = null;
