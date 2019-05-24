@@ -38,14 +38,19 @@ class HashChaining extends HashAlgo{
 
         if (option == OP.INSERT)
             collision += last_collision;
+        else if (option == OP.SEARCH)
+            search_collision += last_collision;
+
         return curr;
     }
 
-    void add(int key, int value){
+    int add(int key, int value){
+        if (capacity == size) return -1;
         int index = Helper.hash_mod(key, capacity);
         Node prev = chaining(OP.INSERT, hash_node[index], key);
 
         // hash[index] is null
+        
         if (prev == null){
             hash_node[index] = new Node(0, 0, null);
             prev = hash_node[index];
@@ -59,7 +64,7 @@ class HashChaining extends HashAlgo{
             prev.next.key = key;
             prev.next.val = value;
         }
-        
+        return 1;
     }
 
     void delete(int key){

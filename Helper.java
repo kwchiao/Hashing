@@ -47,6 +47,9 @@ class Helper {
     }
 
     public static int quad_next_index(int i, int count, int hash_size){
+        int num = i + count * count;
+        if (num < 0)
+            return (-num) % hash_size;
         return (i + count * count) % hash_size;
     }
 

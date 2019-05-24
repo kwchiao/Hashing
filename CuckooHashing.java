@@ -13,19 +13,24 @@ class CuckooHashing extends HashAlgo{
         int index2 = Helper.hash_div_mod(key, capacity);
         if (hash_cuckoo[0][index1] != null){
             last_collision = 0;
+            search_collision += last_collision;
             return hash_cuckoo[0][index1].val;
         }
         else if (hash_cuckoo[1][index2] != null){
             last_collision = 1;
+            search_collision += last_collision;
             return hash_cuckoo[1][index2].val;
         }
         else {
             last_collision = 1;
+            search_collision += last_collision;
             return -1;
         }
+        
     }
 
-    void add(int key, int value){
+    int add(int key, int value){
+        if (capacity == size) return -1;
         Pair pair = new Pair(key, value);
         int flag = 0;
         int count = 1;
@@ -39,13 +44,19 @@ class CuckooHashing extends HashAlgo{
             flag = 1 - flag;
             count++;
 
-            if (pair != null)
-                System.out.println(pair.key);
+            // if (pair != null)
+            //     System.out.println(pair.key);
+            // System.out.println(count);
+            if (count > capacity){
+                System.out.println("Resize needed.");
+                return -1;
+            }
         }
 
-        last_collision = count;
+        last_collision = count - 1;
         collision += last_collision;
         size++;
+        return 1;
     }
 
     //swap pair with hash_f[mod(pair.key)]

@@ -14,9 +14,7 @@ class Hash {
     }
 
     public static void cuckoo_test(){
-        // cuckoo hashing test
-        int[] input = {12,26,92,23,28,94};
-        // int[] input = {12,26, 92};
+        int[] input = {12,26,92,23,28,94,15};
         CuckooHashing ch = new CuckooHashing(11);
 
         for (int i = 0; i < input.length; i++){
@@ -70,38 +68,80 @@ class Hash {
             case 3:
                 hc = new CuckooHashing(capacity);
                 break;
-            // case 4:
-            //     hc = new QuadraticProbing(capacity);
-            //     break;
+            case 4:
+                hc = new QuadraticProbing(capacity);
+                break;
         }
 
-        long total_time = 0;
-        long start_t = 0;
-        long end_t = 0;
-        
-        for (int i = 0; i < load; i++){
-            start_t = System.nanoTime();
-            hc.add(list.get(i), Helper.hash_mod(list.get(i), capacity));
-            end_t = System.nanoTime();
-            total_time += (end_t - start_t);
-        }
+        test_analysis(hc, load, list, capacity);
+    }
 
+    public static void test_analysis(HashAlgo hc, int load, ArrayList<Integer> list, int capacity){
+        hc.collision = 0;
+        hc.last_collision = 0;
+        long total_time_add = 0;
+        long start_t_add = 0;
+        long end_t_add = 0;
+        long total_t_search = 0;
+        long start_t_search = 0;
+        long end_t_search = 0;
+
+        boolean resize = false;
+        int i = 0;
+        for (i = 0; i < load; i++){
+            start_t_add = System.nanoTime();
+            int insertion = hc.add(list.get(i), Helper.hash_mod(list.get(i), capacity));
+            end_t_add = System.nanoTime();
+            if (insertion == -1){
+                resize = true;
+                break;
+            }
+            total_time_add += (end_t_add - start_t_add);
+    
+            start_t_search = System.nanoTime();
+            int value = hc.search(list.get(i));
+            end_t_search = System.nanoTime();
+            total_t_search = end_t_search - start_t_search;
+        }
         System.out.println("Avg insert collision: " + hc.collision * 1.0 /hc.size);
-        System.out.println("Avg insert run time: " + total_time/load + " nanosec");
+        System.out.println("Avg insert run time: " + total_time_add/hc.size + " nanosec");
 
-        start_t = System.nanoTime();
-        hc.add(list.get(load), Helper.hash_mod(list.get(load), capacity));
-        end_t = System.nanoTime();
-
-        System.out.println("Last insert run time: " + (end_t - start_t) + " nanosec");
-        System.out.println("Last insert collision: " + hc.last_collision);
+        // avg search
+        System.out.println("Avg search collision: " + hc.search_collision * 1.0 / hc.size);
+        System.out.println("Avg searh run time: " + total_t_search/hc.size + " nanosec");
         System.out.println();
+    }
+
+    public static void test_analysis_helper(HashAlgo hc, int load, ArrayList<Integer> list, int capacity, long total_time, boolean resize){
+        if (resize == false){
+            long start_t = System.nanoTime();
+            hc.add(list.get(load), Helper.hash_mod(list.get(load), capacity));
+            long end_t = System.nanoTime();
+
+            System.out.println("Last insert run time: " + (end_t - start_t) + " nanosec");
+            System.out.println("Last insert collision: " + hc.last_collision);
+        }
+        System.out.println();
+    }
+
+    public static void general_test(int option, int[] capacity, double[] load_factor, ArrayList<Integer> list){
+        // fixed array size (1000), change alpha
+        System.out.println("Fixed array size " + capacity[1]);
+        for (int i = 0; i < load_factor.length; i++)
+            test(option, list, capacity[1], load_factor[i]);
+
+        // fixed load_factor, change array_zie
+        System.out.println("Fixed load factor " + load_factor[0]);
+        for (int i = 0; i < capacity.length; i++)
+            test(option, list, capacity[i], load_factor[0]);
     }
 
     public static void main(String[] args){
 
-        int[] capacity = {100, 1000, 10000};
-        double[] load_factor = {1.0/4, 2.0/4, 3.0/4};
+       // int[] capacity = {100, 1000, 10000};
+        int[] capacity = {100, 500, 1000, 5000, 10000};
+        //double[] load_factor = {1.0/4, 2.0/4, 3.0/4};
+        double[] load_factor = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
         ArrayList<Integer> list = new ArrayList<>();
         for (int i = 0; i < 10000; i++){
             list.add(i);
@@ -110,18 +150,14 @@ class Hash {
         Collections.shuffle(list, new Random()); 
 
         System.out.println("Hash Chaining");
-        // fixed array size (1000), change alpha
-        for (int i = 0; i < load_factor.length; i++)
-            test(1, list, capacity[1], load_factor[i]);
-
-        // fixed load_factor, change array_zie
-        for (int i = 0; i < capacity.length; i++)
-            test(1, list, capacity[i], load_factor[0]);
-
-
-
-
-
+        general_test(1, capacity, load_factor, list);
+        System.out.println("Linear Probing");
+        general_test(2, capacity, load_factor, list);
+        System.out.println("Cuckoo Hashing");
+        general_test(3, capacity, load_factor, list);
+        System.out.println("Quadratic Probing");
+        general_test(4, capacity, load_factor, list);
+    
 
     }
 

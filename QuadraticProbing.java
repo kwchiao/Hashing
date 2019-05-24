@@ -1,16 +1,8 @@
 class QuadraticProbing extends HashAlgo{
 
-    // Pair[] hash_pair;
-    // int capacity;
-    // int size;
-    // int collision;
-
     QuadraticProbing(int cap){
-        // capacity = cap;
         super(cap);
-        hash_pair = new Pair[capacity];
-        // size = 0;
-        // collision = 0;        
+        hash_pair = new Pair[capacity];    
     }
 
     int search(int key){
@@ -22,42 +14,48 @@ class QuadraticProbing extends HashAlgo{
         return hash_pair[index].val;
     }
 
-    void add(int key, int value){
+    int add(int key, int value){
+        if (capacity == size) return -1;
         int index = Helper.hash_mod(key, capacity);
 
-        if (index == -1){
-            hash_pair[index] = new Pair(key, value);
+        index = quad_probing(OP.INSERT, index, key);
+        if (index != -1){
+            if (hash_pair[index] == null){
+                hash_pair[index] = new Pair(key, value);
+                size++;
+            }
+            else{
+                hash_pair[index].set(key, value);
+            }
+            return 1;
         }
         else {
-            index = quad_probing(OP.INSERT, index, key);
-            if (index != -1){
-                if (hash_pair[index] == null){
-                    hash_pair[index] = new Pair(key, value);
-                    size++;
-                }
-                else{
-                    hash_pair[index].set(key, value);
-                }
-            }
-            else {
-                System.out.println("IllegalStateException: Hash full");
-            }
+            System.out.println("IllegalStateException: Resize needed");
+            return -1;
         }
     }
 
     int quad_probing(OP option, int index, int key){
         int last_collision = 1;
         int result = index;
-        while (last_collision < capacity && hash_pair[index] != null && hash_pair[index].key != key){
+        //System.out.println("heraselfkj");
+        while (last_collision < capacity*capacity && hash_pair[result] != null && hash_pair[result].key != key){
+        //while (last_collision < capacity && hash_pair[index] != null && hash_pair[index].key != key){
             result = Helper.quad_next_index(index, last_collision, capacity);
             last_collision++;
+            //System.out.println(result + " " + index + " " + last_collision + " " + capacity);
         }
+
+        if (last_collision >= capacity * capacity) return -1;
 
         last_collision--;
         if (option == OP.INSERT)
             collision += last_collision;
+        else if (option == OP.SEARCH)
+            search_collision += last_collision;
 
-        return (last_collision+1 < capacity) ? result : -1;
+        return result;
+        //return (last_collision+1 < capacity) ? result : -1;
     }
 
     void print(){

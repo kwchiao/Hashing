@@ -11,13 +11,16 @@ class HashAlgo{
     int collision;
     int last_collision;
 
+    int search_collision;
+
     HashAlgo(int cap){
         capacity = cap;
         size = 0;
         collision = 0; 
         last_collision = 0;  
+        search_collision = 0;
     }
-    
+
     int search(int key){ return 0;}
-    void add(int key, int val){}
+    int add(int key, int val){return 0;}
 }

@@ -16,13 +16,14 @@ class LinearProbing extends HashAlgo{
         return hash_pair[index].val;
     }
 
-    void add(int key, int value){
+    int add(int key, int value){
+        if (capacity == size) return -1;
         int index = Helper.hash_mod(key, capacity);
 
-        if (index == -1){
-            hash_pair[index] = new Pair(key, value);
-        }
-        else {
+        // if (index == -1){
+        //     hash_pair[index] = new Pair(key, value);
+        // }
+        // else {
             index = linear_probing(OP.INSERT, index, key);
             if (index != -1){
                 if (hash_pair[index] == null){
@@ -32,11 +33,13 @@ class LinearProbing extends HashAlgo{
                 else{
                     hash_pair[index].set(key, value);
                 }
+                return 1;
             }
             else {
                 System.out.println("IllegalStateException: Hash full");
+                return -1;
             }
-        }
+       // }
     }
 
     void delete(int key){
@@ -85,6 +88,8 @@ class LinearProbing extends HashAlgo{
         
         if (option == OP.INSERT)
             collision += last_collision;
+        else if (option == OP.SEARCH)
+            search_collision += last_collision;
 
         return (last_collision <= capacity) ? index : -1;
     }
