@@ -1,30 +1,26 @@
-class CuckooHashing {
-
-    Pair[][] hash;
-    int capacity;
-    int size;
-    int collision;
+class CuckooHashing extends HashAlgo{
 
     CuckooHashing(int cap){
-        capacity = cap;
-        hash = new Pair[2][capacity];
-        hash[0] = new Pair[capacity];
-        hash[1] = new Pair[capacity];
-        size = 0;
-        collision = 0;    
+        super(cap);
+        hash_cuckoo = new Pair[2][capacity];
+        hash_cuckoo[0] = new Pair[capacity];
+        hash_cuckoo[1] = new Pair[capacity];
     }
 
     int search(int key){
         if (size == 0) return -1;
         int index1 = Helper.hash_mod(key, capacity);
         int index2 = Helper.hash_div_mod(key, capacity);
-        if (hash[0][index1] != null){
-            return hash[0][index1].val;
+        if (hash_cuckoo[0][index1] != null){
+            last_collision = 0;
+            return hash_cuckoo[0][index1].val;
         }
-        else if (hash[1][index2] != null){
-            return hash[1][index2].val;
+        else if (hash_cuckoo[1][index2] != null){
+            last_collision = 1;
+            return hash_cuckoo[1][index2].val;
         }
         else {
+            last_collision = 1;
             return -1;
         }
     }
@@ -34,7 +30,7 @@ class CuckooHashing {
         int flag = 0;
         int count = 1;
 
-        while(count < capacity && pair != null){       
+        while(pair != null){       
             Pair temp = new Pair(pair.key, pair.val);
 
             if (addHelper(flag, pair.key, temp, pair) == 0)
@@ -42,25 +38,30 @@ class CuckooHashing {
 
             flag = 1 - flag;
             count++;
+
+            if (pair != null)
+                System.out.println(pair.key);
         }
 
+        last_collision = count;
+        collision += last_collision;
         size++;
     }
 
     //swap pair with hash_f[mod(pair.key)]
     int addHelper(int flag, int key, Pair temp, Pair pair){
         int index = Helper.hash(flag, key, capacity);
-        if (hash[flag][index] == null){
+        if (hash_cuckoo[flag][index] == null){
             pair = null;
         }
         else {
-            pair.copy(hash[flag][index]);
+            pair.copy(hash_cuckoo[flag][index]);
         }
 
-        if (hash[flag][index] == null){
-            hash[flag][index] = new Pair();
+        if (hash_cuckoo[flag][index] == null){
+            hash_cuckoo[flag][index] = new Pair();
         }
-        hash[flag][index].copy(temp);
+        hash_cuckoo[flag][index].copy(temp);
 
         return pair == null ? 0 : 1;
     }
@@ -70,22 +71,23 @@ class CuckooHashing {
         int index1 = Helper.hash_mod(key, capacity);
         int index2 = Helper.hash_div_mod(key, capacity);
 
-        if (hash[0][index1] != null && hash[0][index1].key == key ){
-            hash[0][index1] = null;
+        if (hash_cuckoo[0][index1] != null && hash_cuckoo[0][index1].key == key ){
+            hash_cuckoo[0][index1] = null;
             size--;
-            System.out.println("h");
+            last_collision = 0;
         }
-        else if (hash[1][index2] != null && hash[1][index2].key == key ){
-            hash[1][index2] = null;
+        else if (hash_cuckoo[1][index2] != null && hash_cuckoo[1][index2].key == key ){
+            hash_cuckoo[1][index2] = null;
             size--;
+            last_collision = 1;
         }
     }
 
     void print(){
         for (int z = 0; z < 2; z++){
             for (int i = 0; i < capacity; i++){
-                if (hash[z][i] != null)
-                    System.out.println(i + ": " + hash[z][i].key + ", " + hash[z][i].val);
+                if (hash_cuckoo[z][i] != null)
+                    System.out.println(i + ": " + hash_cuckoo[z][i].key + ", " + hash_cuckoo[z][i].val);
                 else
                     System.out.println(i + ": ");
             }

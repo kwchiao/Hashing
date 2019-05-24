@@ -1,21 +1,14 @@
-class HashChaining {
-
-    //array of nodes
-    Node[] hash;
-    int capacity;
-    int size;
-    int collision;
+class HashChaining extends HashAlgo{
 
     HashChaining(int cap){
-        capacity = cap;
-        hash = new Node[capacity];
-        size = 0;
-        collision = 0;        
+        super(cap);
+        hash_node = new Node[capacity];
     }
 
+    // search option == 0
     int search(int key){
         int index = Helper.hash_mod(key, capacity);
-        Node node = chaining(hash[index], key).next;
+        Node node = chaining(OP.SEARCH, hash_node[index], key).next;
 
         if (node == null){
             return -1;
@@ -26,7 +19,8 @@ class HashChaining {
     }
 
     // return previous node
-    Node chaining(Node head, int key){
+    Node chaining(OP option, Node head, int key){
+        last_collision = 0;
         if (head == null){
             return null;
         }
@@ -39,21 +33,22 @@ class HashChaining {
             }
             curr = next;
             next = next.next;
+            last_collision++;
         }
+
+        if (option == OP.INSERT)
+            collision += last_collision;
         return curr;
     }
 
     void add(int key, int value){
         int index = Helper.hash_mod(key, capacity);
-        Node prev = chaining(hash[index], key);
+        Node prev = chaining(OP.INSERT, hash_node[index], key);
 
         // hash[index] is null
         if (prev == null){
-            hash[index] = new Node(0, 0, null);
-            prev = hash[index];
-        }
-        else {
-            collision++;
+            hash_node[index] = new Node(0, 0, null);
+            prev = hash_node[index];
         }
 
         if (prev.next == null) {
@@ -69,18 +64,17 @@ class HashChaining {
 
     void delete(int key){
         int index = Helper.hash_mod(key, capacity);
-        Node prev = chaining(hash[index], key);
+        Node prev = chaining(OP.DELETE, hash_node[index], key);
         if (prev != null && prev.next != null){
             prev.next = prev.next.next;
             size--;
-            collision--;
         }
     }
 
     void print(){
         for (int i = 0; i < capacity; i++) {
             System.out.print(i + ": ");
-            Node n = hash[i];
+            Node n = hash_node[i];
             if (n != null){
                 n = n.next;
             }

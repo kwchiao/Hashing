@@ -19,8 +19,7 @@ class Pair {
         val = v;
     }
 
-    Pair(){
-    }
+    Pair(){}
 
     void set(int k, int v){
         key = k;

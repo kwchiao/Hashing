@@ -1,43 +1,36 @@
 
 
-class LinearProbing {
-
-    Pair[] hash;
-    int capacity;
-    int size;
-    int collision;
+class LinearProbing extends HashAlgo{
 
     LinearProbing(int cap){
-        capacity = cap;
-        hash = new Pair[capacity];
-        size = 0;
-        collision = 0;        
+        super(cap);
+        hash_pair = new Pair[capacity];
     }
 
     int search(int key){
         int index = Helper.hash_mod(key, capacity);
-        index = linear_probing(index, key);
-        if (index == -1 || hash[index] == null){
+        index = linear_probing(OP.SEARCH, index, key);
+        if (index == -1 || hash_pair[index] == null){
            return -1;
         }
-        return hash[index].val;
+        return hash_pair[index].val;
     }
 
     void add(int key, int value){
         int index = Helper.hash_mod(key, capacity);
 
         if (index == -1){
-            hash[index] = new Pair(key, value);
+            hash_pair[index] = new Pair(key, value);
         }
         else {
-            index = linear_probing(index, key);
+            index = linear_probing(OP.INSERT, index, key);
             if (index != -1){
-                if (hash[index] == null){
-                    hash[index] = new Pair(key, value);
+                if (hash_pair[index] == null){
+                    hash_pair[index] = new Pair(key, value);
                     size++;
                 }
                 else{
-                    hash[index].set(key, value);
+                    hash_pair[index].set(key, value);
                 }
             }
             else {
@@ -48,15 +41,15 @@ class LinearProbing {
 
     void delete(int key){
         int index = Helper.hash_mod(key, capacity);
-        index = linear_probing(index, key);
-        if (index == -1 || hash[index] == null){
+        index = linear_probing(OP.DELETE, index, key);
+        if (index == -1 || hash_pair[index] == null){
             System.out.println("exception");
         }
         
         int j = Helper.next_index(index, capacity);
         int count = 1;
-        while (count < capacity && hash[j] != null){
-            int hash_key = Helper.hash_mod(hash[j].key, capacity);
+        while (count < capacity && hash_pair[j] != null){
+            int hash_key = Helper.hash_mod(hash_pair[j].key, capacity);
             int iplusone = Helper.next_index(index, capacity);
             boolean inrange = false;
 
@@ -71,31 +64,35 @@ class LinearProbing {
             
             if (inrange){
                 System.out.println("index: " + index + " j: " + j);
-                hash[index] = hash[j];
+                hash_pair[index] = hash_pair[j];
                 index = j;
             }
 
             j = Helper.next_index(j, capacity);
             count++;
         }
-        hash[index] = null;
+        hash_pair[index] = null;
         size--;
     }
 
-    int linear_probing(int index, int key){
-        int count = 1;
-        while (count < capacity && hash[index] != null && hash[index].key != key){
+    int linear_probing(OP option, int index, int key){
+        int last_collision = 0;
+        while (last_collision <= capacity && hash_pair[index] != null && hash_pair[index].key != key){
             index = Helper.next_index(index, capacity);
-            count++;
+            last_collision++;
         }
 
-        return (count < capacity) ? index : -1;
+        
+        if (option == OP.INSERT)
+            collision += last_collision;
+
+        return (last_collision <= capacity) ? index : -1;
     }
     
     void print(){
         for (int i = 0; i < capacity; i++){
-            if (hash[i] != null)
-                System.out.println(i + ": " + hash[i].key + ", " + hash[i].val);
+            if (hash_pair[i] != null)
+                System.out.println(i + ": " + hash_pair[i].key + ", " + hash_pair[i].val);
             else
                 System.out.println(i + ": ");
         }

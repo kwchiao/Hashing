@@ -1,41 +1,42 @@
-class QuadraticProbing {
+class QuadraticProbing extends HashAlgo{
 
-    Pair[] hash;
-    int capacity;
-    int size;
-    int collision;
+    // Pair[] hash_pair;
+    // int capacity;
+    // int size;
+    // int collision;
 
     QuadraticProbing(int cap){
-        capacity = cap;
-        hash = new Pair[capacity];
-        size = 0;
-        collision = 0;        
+        // capacity = cap;
+        super(cap);
+        hash_pair = new Pair[capacity];
+        // size = 0;
+        // collision = 0;        
     }
 
     int search(int key){
         int index = Helper.hash_mod(key, capacity);
-        index = quad_probing(index, key);
-        if (index == -1 || hash[index] == null){
+        index = quad_probing(OP.SEARCH,index, key);
+        if (index == -1 || hash_pair[index] == null){
            return -1;
         }
-        return hash[index].val;
+        return hash_pair[index].val;
     }
 
     void add(int key, int value){
         int index = Helper.hash_mod(key, capacity);
 
         if (index == -1){
-            hash[index] = new Pair(key, value);
+            hash_pair[index] = new Pair(key, value);
         }
         else {
-            index = quad_probing(index, key);
+            index = quad_probing(OP.INSERT, index, key);
             if (index != -1){
-                if (hash[index] == null){
-                    hash[index] = new Pair(key, value);
+                if (hash_pair[index] == null){
+                    hash_pair[index] = new Pair(key, value);
                     size++;
                 }
                 else{
-                    hash[index].set(key, value);
+                    hash_pair[index].set(key, value);
                 }
             }
             else {
@@ -44,21 +45,25 @@ class QuadraticProbing {
         }
     }
 
-    int quad_probing(int index, int key){
-        int count = 1;
+    int quad_probing(OP option, int index, int key){
+        int last_collision = 1;
         int result = index;
-        while (count < capacity && hash[index] != null && hash[index].key != key){
-            result = Helper.quad_next_index(index, count, capacity);
-            count++;
+        while (last_collision < capacity && hash_pair[index] != null && hash_pair[index].key != key){
+            result = Helper.quad_next_index(index, last_collision, capacity);
+            last_collision++;
         }
 
-        return (count < capacity) ? result : -1;
+        last_collision--;
+        if (option == OP.INSERT)
+            collision += last_collision;
+
+        return (last_collision+1 < capacity) ? result : -1;
     }
 
     void print(){
         for (int i = 0; i < capacity; i++){
-            if (hash[i] != null)
-                System.out.println(i + ": " + hash[i].key + ", " + hash[i].val);
+            if (hash_pair[i] != null)
+                System.out.println(i + ": " + hash_pair[i].key + ", " + hash_pair[i].val);
             else
                 System.out.println(i + ": ");
         }
